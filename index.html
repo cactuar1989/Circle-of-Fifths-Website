@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+    <title>Circle of Fifths Chord Map</title>
+    <style>
+      path:hover {
+        fill: hsl(348, 60%, 40%)
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Circle of Fifths</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="fyi.html">Keys/Modes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="caged.html">CAGED</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="altChords.html">Alt Chords</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container h-100 mt-5 pt-2">
+  <div class="row">
+    <div class="col pt-1">
+      <img class="img-fluid mw-25" id="chord" src="img/C.png">
+    </div>
+    <div class="col mh-100">
+    <svg viewBox="0 0 300 300" transform="rotate(-15, 50, 50)" text-anchor="middle" dominant-baseline="middle" fill="white">
+        <script>
+        var text;
+        var fill;
+        var fontSize;
+        var name;
+        // data that will fill the elements of the circle
+let data = [
+{
+    outer: { label: 'A', name: 'A' },
+    middle: { label: 'F#m', name: 'Fsharpm' },
+    inner: { label: 'G#&deg', name: 'Gsharpdim' },
+},
+{
+    outer: { label: 'E', name: 'E' },
+    middle: { label: 'C#m', name: 'Csharpm' },
+    inner: { label: 'D#&deg', name: 'Dsharpdim' },
+},
+{
+    outer: { label: 'B', name: 'B' },
+    middle: { label: 'G#m', name: 'Gsharpm' },
+    inner: { label: 'A#&deg', name: 'Asharpdim' },
+},
+{
+    outer: { label: 'F#', name: 'Gb' },
+    middle: { label: 'D#m', name: 'Ebm' },
+    inner: { label: 'F&deg', name: 'Fdim' },
+},
+{
+    outer: { label: 'C#', name: 'Db' },
+    middle: { label: 'A#m', name: 'Bbm' },
+    inner: { label: 'C&deg', name: 'Cdim' },
+},
+{
+    outer: { label: 'G#', name: 'Ab' },
+    middle: { label: 'Fm', name: 'Fm' },
+    inner: { label: 'G&deg', name: 'Gdim' },
+},
+{
+    outer: { label: 'D#', name: 'Eb' },
+    middle: { label: 'Cm', name: 'Cm' },
+    inner: { label: 'D&deg', name: 'Ddim' },
+},
+{
+    outer: { label: 'A#', name: 'Bb' },
+    middle: { label: 'Gm', name: 'Gm' },
+    inner: { label: 'A&deg', name: 'Adim' },
+},
+{
+    outer: { label: 'F', name: 'F' },
+    middle: { label: 'Dm', name: 'Dm' },
+    inner: { label: 'E&deg', name: 'Edim' },
+},
+{
+    outer: { label: 'C', name: 'C' },
+    middle: { label: 'Am', name: 'Am' },
+    inner: { label: 'B&deg', name: 'Bdim' },
+},
+{
+    outer: { label: 'G', name: 'G' },
+    middle: { label: 'Em', name: 'Em' },
+    inner: { label: 'F#&deg', name: 'Fsharpdim' },
+},
+{
+    outer: { label: 'D', name: 'D' },
+    middle: { label: 'Bm', name: 'Bm' },
+    inner: { label: 'C#&deg', name: 'Csharpdim' },
+},
+]
+
+// mp3 from https://www.scales-chords.com/chord-sound/guitar-Bm7b5-strum-x-2-3-2-3-x.mp3 etc
+
+            const displayedChord = document.getElementById('chord');
+            function playChord(chord) {
+                displayedChord.src = "img/" + chord + ".png";
+                var audio = new Audio("mp3/" + chord + ".mp3");
+                audio.volume = 1.0;
+                audio.play();
+            }
+            
+            function posXY(center, radius, angle) {
+                return [
+                    center + radius * Math.cos(angle * Math.PI / 180.0), 
+                    center + radius * Math.sin(angle * Math.PI / 180.0)
+                ]
+            }
+            
+            function polarToCartesian(x, y, r, degrees) {
+                const radians = degrees * Math.PI / 180.0;
+                return [x + (r * Math.cos(radians)), y + (r * Math.sin(radians))]
+            }
+
+            function segmentPath(x, y, r0, r1, d0, d1) {
+                const arc = Math.abs(d0 - d1) > 180 ? 1 : 0
+                const point = (radius, degree) =>
+                    polarToCartesian(x, y, radius, degree)
+                        .map(n => n.toPrecision(5))
+                        .join(',')
+                return [
+                    `M${point(r0, d0)}`,
+                    `A${r0},${r0},0,${arc},1,${point(r0, d1)}`,
+                    `L${point(r1, d1)}`,
+                    `A${r1},${r1},0,${arc},0,${point(r1, d0)}`,
+                    'Z',
+                ].join('')
+            }
+
+            function createSegment(index, segments, size, radius, width) {
+                const center = size / 2
+                const degrees = 360 / segments
+                const start = degrees * index
+                const end = (degrees * (index + 1) + 1)
+                const path = segmentPath(center, center, radius, radius - width, start, end);
+
+                // set differences based on outer/middle/inner
+                if (radius == 150) {
+                    text = data[index].outer.label;
+                    fill = 'hsl(348, 60%, 30%)';
+                    fontSize = '24px';
+                    name = data[index].outer.name;
+                }
+                if (radius == 100) {
+                    text = data[index].middle.label;
+                    fill = 'hsl(348, 60%, 20%)';
+                    fontSize = '12px';
+                    name = data[index].middle.name;
+                }
+                if (radius == 70) {
+                    text = data[index].inner.label;
+                    fill = 'hsl(348, 60%, 10%)';
+                    fontSize = '10px';
+                    name = data[index].inner.name;
+                }
+                
+                const pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                pathElement.setAttribute("d", path);
+                //pathElement.setAttribute("fill", index % 2 === 0 ? 'blue' : 'green');
+                pathElement.setAttribute("fill", fill);
+                pathElement.setAttribute("stroke", 'white'); // Set border color
+                pathElement.setAttribute("stroke-width", 1); // Set border width
+                pathElement.setAttribute("id", `${name}`);
+
+                // Add on click event
+                pathElement.addEventListener("click", function () {
+                    playChord(this.id);
+                });
+
+                // Append the path to the SVG
+                document.querySelector("svg").appendChild(pathElement);
+                
+                // Add text to the path
+                const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                const [textX, textY] = polarToCartesian(center, center, radius - width / 2, (start + end) / 2);
+                textElement.setAttribute("x", textX);
+                textElement.setAttribute("y", textY);
+                textElement.setAttribute("font-size", fontSize);
+                textElement.setAttribute("id", `${name}`);
+                textElement.textContent = text;
+                // Rotate the text around its own center
+                textElement.setAttribute("transform", `rotate(15, ${textX}, ${textY})`);
+                
+                // Add event listener for click event on text
+                textElement.addEventListener("click", function () {
+                    playChord(this.id);
+                });
+    
+                document.querySelector("svg").appendChild(textElement);
+            }
+
+            // Call the createSegment function 12 times with different index values
+            for (let i = 0; i < 12; i++) {
+                createSegment(i, 12, 300, 150, 50);
+                createSegment(i, 12, 300, 100, 30) /* radius = 100, width = 30) */
+                createSegment(i, 12, 300, 70, 30) /* radius = 70, width = 30) */
+            }
+        </script>
+    </svg>
+    </div>
+  </div>
+</div>
+</body>
+</html>
